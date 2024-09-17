@@ -9,29 +9,29 @@ import Testing
 import Foundation
 @testable import AlteredDeckFormat
 
-@Test("Create empty BitData instance")
+@Test("Create empty BitDataWriter instance")
 func createEmptyBitData() {
-	#expect(BitData().data.isEmpty)
+	#expect(BitDataWriter().data.isEmpty)
 }
 
-@Test("Create BitData from existing data")
+@Test("Create BitDataReader from existing data")
 func createBitDataFromExistingData() {
 	let data = Data([1, 2, 3])
-	#expect(BitData(data).data == data)
+	#expect(BitDataReader(data).data == data)
 }
 
-@Test("Append bits to BitData - simple")
+@Test("Append bits to BitDataWriter - simple")
 func appendBitsToBitDataSimple() {
-	let bitData = BitData()
+	let bitData = BitDataWriter()
 	bitData.append(15, bitCount: 4)
 	#expect(bitData.data.isEmpty)
 	bitData.commitBuffer()
 	#expect(bitData.data.first == 15 << 4)
 }
 
-@Test("Append bits to BitData - medium")
+@Test("Append bits to BitDataWriter - medium")
 func appendBitsToBitDataMedium() {
-	let bitData = BitData()
+	let bitData = BitDataWriter()
 	bitData.append(15, bitCount: 4)
 	bitData.append(1, bitCount: 6)
 	bitData.append(7, bitCount: 3)
@@ -42,9 +42,9 @@ func appendBitsToBitDataMedium() {
 	#expect(bitData.data.last == (1 << 6) + (7 << 3))
 }
 
-@Test("Append bits to BitData - hard")
+@Test("Append bits to BitDataWriter - hard")
 func appendBitsToBitDataHard() {
-	let bitData = BitData()
+	let bitData = BitDataWriter()
 	bitData.append(15, bitCount: 4)
 	bitData.append(1, bitCount: 6)
 	bitData.append(7, bitCount: 3)
@@ -58,12 +58,15 @@ func appendBitsToBitDataHard() {
 	#expect(bitData.data[3] == 0)
 }
 
-@Test("Read bits to BitData")
+@Test("Read bits to BitDataReader")
 func readBits() throws {
-	let bitData = BitData(Data([0b0110_1101, 0b0100_0001, 0b1110_0100]))
+	let bitData = BitDataReader(Data([0b0110_1101, 0b0100_0001, 0b1110_0100]))
 
-	#expect(try bitData.read(atBitIndex: 2, bitCount: 2) == 0b10)
-	#expect(try bitData.read(atBitIndex: 2, bitCount: 4) == 0b1011)
-	#expect(try bitData.read(atBitIndex: 6, bitCount: 4) == 0b0101)
-	#expect(try bitData.read(atBitIndex: 7, bitCount: 16) == 0b1010_0000_1111_0010)
+	#expect(try bitData.read(2) == 0b01)
+	#expect(try bitData.read(4) == 0b1011)
+	#expect(try bitData.read(4) == 0b0101)
+
+	let bitData2 = BitDataReader(Data([0b0110_1101, 0b0100_0001, 0b1110_0100]))
+	#expect(try bitData2.read(7) == 0b0011_0110)
+	#expect(try bitData2.read(16) == 0b1010_0000_1111_0010)
 }

@@ -14,7 +14,7 @@ public struct AlteredDeckFormat {
 	/// - Returns: A Data object containing the deck list encoded with altered-deckfmt.
 	static func encode(_ deckListString: String) throws -> Data {
 		let deck = try DeckParser.parseDeck(deckListString)
-		return try DeckCoder.encode(deck)
+		return try DeckEncoder.encode(deck)
 	}
 
 	/// Decode binary data using the altered-deckfmt into a deck list string.
@@ -22,7 +22,7 @@ public struct AlteredDeckFormat {
 	///   - data: Data encoded in altered-deckfmt.
 	/// - Returns: A deck list string.
 	static func decode(_ data: Data) throws -> String {
-		let deck = try DeckCoder.decode(data)
+		let deck = try DeckDecoder.decode(data)
 		return deck.listString
 	}
 
